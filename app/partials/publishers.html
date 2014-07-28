@@ -1,0 +1,45 @@
+<div class="customers view">
+    <div class="container">
+        <header>
+            <h3>All Publishers</h3>
+        </header>
+
+		<div class="checkbox">
+		    <label>
+				<input type="checkbox" ng-model="addChecked"> Add a New Publisher
+		    </label>
+		</div>
+
+        <div class="row" ng-show="addChecked">
+            <div class="span3">
+                First Name:
+                <br />
+                <input data-ng-model="newPublisher.firstName" type="text" placeholder="First Name">
+            </div>
+            <div class="span3">
+                Last Name:
+                <br />
+                <input data-ng-model="newPublisher.lastName" type="text" placeholder="Last Name">
+            </div>
+            <div class="span3">
+                <br />
+                <button id="submitPublisher" class="btn btn-primary sp-bot-left" type="button" data-ng-disabled="!newPublisher.firstName || !newPublisher.lastName"
+                    data-ng-click="insertPublisher()">Add Publisher</button>
+            </div>
+        </div>
+        <br /><hr /><br />
+
+        <div ng-hide="publishers.length > 0">Loading...</div>
+        <div ui-if="publishers.length">
+            <div class="row cardContainer">
+                <div class="span3 card" data-ng-repeat="publisher in publishers track by publisher.id | orderBy:'lastName'">
+                    <div class="cardHeader">{{publisher.firstName + ' ' + publisher.lastName}}</div>
+                    <div class="cardBody">
+                    	<a href="#/publisher/{{publisher.id}}" class="cardBody btn-link">{{ publisher.territories.length ? publisher.territories.length : 'No'}} Territories</a>
+					</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,45 @@
+<table class="table table-hover table-striped table-condensed table-bordered ordersTable" data-ng-controller="OrderChildController">
+    <thead>
+        <tr>
+            <th data-ng-click="setOrder('name')">Name</th>
+            <th data-ng-click="setOrder('address')">Address</th>
+            <th data-ng-click="setOrder('phone')">Phone</th>
+            <th data-ng-click="setOrder('date')">Date/Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-ng-hide="territory.addresses || territory.addresses.length > 0" class="error">
+            <td colspan="4">
+                <div class="text-center"><strong>No addresses found</strong></div>
+            </td>
+        </tr>
+        <tr data-ng-repeat="address in territory.addresses track by address.id | orderBy:orderby:reverse">
+            <td>
+                {{ address.name }}
+            </td>
+            <td>
+                {{ address.address }}
+            </td>
+            <td>
+                {{ address.phone }}
+            </td>
+            <td>
+				<table class="datesTable">
+
+					<tr data-ng-repeat="date in address.dates track by date.id | orderBy:orderby:reverse">
+               			<td>{{ date.date }}</td>
+						<td>{{ date.notes }}</td>
+					</tr>
+				</table>
+            </td>
+        </tr>
+        <tr class="info">
+            <td colspan="3">
+                &nbsp;
+            </td>
+            <td>
+                <strong> </strong>
+            </td>
+        </tr>
+    </tbody>
+</table>

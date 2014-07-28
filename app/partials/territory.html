@@ -1,0 +1,18 @@
+<div class="customerOrders view">
+    <div class="container">
+        <header>
+            <h3>Territory # {{ territory.terrNumber }}</h3>
+			<p>{{ territory.street + ', ' + territory.city }}</p>
+        </header>
+        <div>
+            <div class="row">
+                <div class="span12">
+                    <div class="indent">
+                        <div data-ng-include="+ site_url+'/app/partials/addressTable.html'" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
