@@ -113,10 +113,30 @@ footer {
     opacity: 1.0;
 }
 
+.datesTable { width: 100% }
 .datesTable tr th {
 	background-color: #006dcc !important;
 }
-
+.ordersTable .middle {
+    vertical-align: middle;
+}
 button.btn.sp-bot-left {
 	margin: 0 0 11px 15px;
 }
+
+.editable-click, a.editable-click {
+    border-bottom: 0;
+    padding-right: 20px;
+}
+.editable-click:hover, a.editable-click:hover {
+    background: url("images/edit.png") no-repeat scroll right top;
+}
+
+button.delete-button {
+    background: url(images/delete.png) no-repeat;
+    border: medium none;
+    text-indent: -9999em;
+    width: 20px;
+    opacity: .75;
+}
+button.delete-button:hover { opacity: 1;}

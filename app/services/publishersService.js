@@ -48,17 +48,14 @@ app.service('publishersService', function ($http) {
     this.insertPublisher = function (firstName, lastName) {
         var data = {
             module: 'publishers',
-			column: '*',
+			column: 'firstName, lastName',
 			add: 1,
             firstName: firstName,
             lastName: lastName
         };
 
 		jQuery.ajax({
-			data: data,
-			success: function(json) {
-				window.publishers = json;
-			}
+			data: data
 		});
 
     };

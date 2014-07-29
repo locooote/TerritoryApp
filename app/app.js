@@ -1,7 +1,7 @@
 
 var site_url = 'http://localhost/TerritoryMap/';
 
-var app = angular.module('customersApp', ['ngRoute']);
+var app = angular.module('territoryApp', ['ngRoute','xeditable']);
 
 app.config(function ($routeProvider) {
     $routeProvider

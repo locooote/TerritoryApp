@@ -14,16 +14,16 @@
 	            <div class="span3">
 	                First Name:
 	                <br />
-	                <input data-ng-model="newPublisher.firstName" type="text" placeholder="First Name">
+	                <input data-ng-model="publisher.firstName" type="text" placeholder="First Name">
 	            </div>
 	            <div class="span3">
 	                Last Name:
 	                <br />
-	                <input data-ng-model="newPublisher.lastName" type="text" placeholder="Last Name">
+	                <input data-ng-model="publisher.lastName" type="text" placeholder="Last Name">
 	            </div>
 	            <div class="span2">
 	                <br />
-	                <button id="updatePublisher" class="btn btn-primary sp-bot-left" type="button" data-ng-disabled="!newPublisher.firstName || !newPublisher.lastName" data-ng-click="updatePublisher()">Update Name</button>
+	                <button id="updatePublisher" class="btn btn-primary sp-bot-left" type="button" data-ng-disabled="!publisher.firstName || !publisher.lastName" data-ng-click="updatePublisher()">Update Name</button>
 	            </div>
 	        </div>
 
@@ -45,7 +45,7 @@
             </div>
             <div class="span3">
 				<br />
-                <button id="submitTerritory" class="btn btn-primary" type="button"
+                <button id="submitTerritory" class="btn btn-success" type="button"
                     data-ng-disabled="!newTerritory.terrSelected || !newTerritory.date"
                     data-ng-click="assignTerritory()">Assign Territory</button>
             </div>

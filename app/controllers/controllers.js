@@ -60,7 +60,7 @@ app.controller('PublisherController', function ($scope, $route, $routeParams, pu
     };
 
 	$scope.assignTerritory = function () {
-        publishersService.assignTerritory($scope.newTerritory.terrSelected.id, $scope.newTerritory.date, $scope.newTerritory.terrSelected.terrNumber, $scope.publisher.id, $scope.publisher.territories);
+        publishersService.assignTerritory( $scope.newTerritory.terrSelected.id, $scope.newTerritory.date, $scope.newTerritory.terrSelected.terrNumber, $scope.publisher.id, $scope.publisher.territories);
         $scope.newTerritory.terrSelected = '';
         $scope.newTerritory.date = '';
 		$route.reload();
@@ -120,7 +120,7 @@ app.controller('OrderChildController', function ($scope) {
 
 
 // TerritoriesController
-app.controller('TerritoriesController', function ($scope, territoriesService) {
+app.controller('TerritoriesController', function ($scope, $route, territoriesService) {
     $scope.territories = [];
 
     init();
@@ -132,11 +132,20 @@ app.controller('TerritoriesController', function ($scope, territoriesService) {
 		$scope.territories = territoriesService.getTerritories();
 		$scope.site_url = site_url;
     }
+    
+    $scope.insertTerritory = function () {
+        territoriesService.insertTerritory($scope.newTerritory.terrNumber, $scope.newTerritory.street, $scope.newTerritory.city);
+        $scope.newTerritory.terrNumber = '';
+        $scope.newTerritory.street = '';
+        $scope.newTerritory.city = '';
+		$route.reload();
+    };
+    
 });
 
 
 // TerritoriesController
-app.controller('TerritoryController', function ($scope, $routeParams, territoriesService) {
+app.controller('TerritoryController', function ($scope, $route, $routeParams, territoriesService) {
     $scope.territory = [];
 
     init();
@@ -146,6 +155,64 @@ app.controller('TerritoryController', function ($scope, $routeParams, territorie
         if (territoryID > 0) {
             $scope.territory = territoriesService.getTerritory(territoryID);
         }
+        
+        var date = new Date();
+ 		$scope.newAddress = {"date": date.getMonth()+1 + '-' + date.getDate() + '-' + date.getFullYear() }
+        
+        // ini datepicker
+		$('.container input.date').datepicker({
+		    format: "mm-dd-yyyy",
+    		autoclose: true,
+			todayHighlight: true
+		}).on('changeDate', function(e){
+			if($(this).val() != '') $scope.newAddress.date = $(this).val();
+	    });
 		$scope.site_url = site_url;
     }
+    
+    $scope.updateTerritory = function () {
+        territoriesService.updateTerritory($scope.territory.id, $scope.territory.terrNumber, $scope.territory.street, $scope.territory.city);
+		$route.reload();
+    };
+    
+    $scope.addAddress = function () {
+        territoriesService.addAddress($scope.territory.id, $scope.newAddress.name, $scope.newAddress.address, $scope.newAddress.phone, $scope.newAddress.date, $scope.newAddress.notes);
+        console.log($scope.newAddress);
+        $scope.territory.addresses.push($scope.newAddress);
+		$route.reload();
+    };
+    
+    $scope.addDate = function (addressSelected) {
+		$scope.newDateEntry = { addressSelected: addressSelected };
+		$('#AddDateModal').modal('show');
+    };
+
+	$scope.addDateEntry = function(addressSelected) {
+		publishersService.addDateEntry(addressSelected,$scope.publisher.id, $scope.publisher.territories);
+		$('#AddDateModal').modal('hide');
+		$route.reload();
+	};
+    
+    $scope.addDateEntry = function(addressSelected) {
+		publishersService.addDateEntry(addressSelected,$scope.publisher.id, $scope.publisher.territories);
+		$('#AddDateModal').modal('hide');
+		$route.reload();
+	};
+    
+    $scope.updateAddress = function (addressId,name,data) {
+        console.log(addressId + ' name: ' + name + ' data: ' + data); 
+        territoriesService.updateAddress(addressId,name,data);
+        // $route.reload();
+    };
+    
+    $scope.deleteDate = function (selectedDateId) {
+		$scope.selectedDateId = selectedDateId;
+		$('#DeleteDateModal').modal('show');
+    };
+    
+    $scope.deleteAddress = function (selectedAddressId) {
+		$scope.selectedAddressId = selectedAddressId;
+		$('#DeleteAddressModal').modal('show');
+    };
+    
 });

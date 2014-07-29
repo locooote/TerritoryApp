@@ -3,6 +3,36 @@
         <header>
             <h3>All Territories</h3>
         </header>
+        
+        <div class="checkbox">
+		    <label>
+				<input type="checkbox" ng-model="addChecked"> Add a New Territory
+		    </label>
+		</div>
+
+        <div class="row" ng-show="addChecked">
+            <div class="span3">
+                Territory #:
+                <br />
+                <input data-ng-model="newTerritory.terrNumber" type="text" placeholder="Territory #">
+            </div>
+            <div class="span3">
+                Street:
+                <br />
+                <input data-ng-model="newTerritory.street" type="text" placeholder="Street">
+            </div>
+            <div class="span3">
+                City:
+                <br />
+                <input data-ng-model="newTerritory.city" type="text" placeholder="City">
+            </div>
+            <div class="span3">
+                <br />
+                <button id="submitTerritory" class="btn btn-success sp-bot-left" type="button" data-ng-disabled="!newTerritory.terrNumber || !newTerritory.street || !newTerritory.city" data-ng-click="insertTerritory()">Add Territory</button>
+            </div>
+        </div>
+        <br /><hr /><br />
+        
         <div>
             <div class="row">
                 <div class="span12" data-ng-repeat="territory in territories track by territory.id | orderBy:'name'">

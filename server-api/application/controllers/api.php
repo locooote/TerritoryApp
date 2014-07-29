@@ -20,13 +20,37 @@ class Api extends CI_Controller {
  				
 				// CREATE
 				if($this->input->post('add')) {
+                    $data = array();
+                    $columns = explode(',',$column);
+					if($columns) 
+                        foreach($columns as $field) 
+						  if($this->input->post(trim($field)))
+                            $data[$field] = $this->input->post(trim($field));
+                    // insert  data
+				    $this->db->insert($table, $data);
+                    
+                    // addresses
+				    if($table=='addresses') {
+                        $address_id = $this->db->insert_id();
+                        $date = array(
+                            'date' => $this->input->post('date'),
+                            'address_id' => $address_id
+                        );
+                        if($this->input->post('notes')) 
+                            $date['notes'] = $this->input->post('notes');				                // insert publisher data
+					    $this->db->insert('dates', $date);          
+                    }
+                    /*
 					// the publisher
-					$publisher = array(
-						'firstName' => $this->input->post('firstName'),
-						'lastName' => $this->input->post('lastName')
-					);
-					// insert publisher data
-					$this->db->insert('publishers', $publisher);
+                    if($table=='publishers') {
+                        $publisher = array(
+                            'firstName' => $this->input->post('firstName'),
+                            'lastName' => $this->input->post('lastName')
+                        );
+					   // insert publisher data
+					   $this->db->insert('publishers', $publisher);
+                    }
+                    */
 				}
 				// READ
 				else if($this->input->post('view')) {
@@ -71,7 +95,7 @@ class Api extends CI_Controller {
 					$set = '';
 					$columns = explode(',',$column);
 					if($columns) foreach($columns as $field) 
-						$set .= ($set?',':''). " $field = '".$this->input->post(trim($field))."'";
+						if( $this->input->post(trim($field)) ) $set .= ($set?',':''). " $field = '".$this->input->post(trim($field))."'";
 					$result = $this->mysqlite->db_query("UPDATE $table SET $set WHERE id = ".$id);
 					var_dump( $result );
 				}

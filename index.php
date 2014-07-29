@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html data-ng-app="customersApp">
+<html data-ng-app="territoryApp">
 <head>
     <title>Congregation Territory </title>
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/bootstrap-responsive.min.css" rel="stylesheet" />
     <link href="Content/datepicker3.css" rel="stylesheet" />
+    <link href="Content/xeditable.css" rel="stylesheet">
     <link href="Content/appStyles.css" rel="stylesheet" />
 </head>
 <body>
@@ -61,7 +62,8 @@
     <!-- UI Libs -->
     <script src="Scripts/bootstrap.js"></script>
     <script src="Scripts/bootstrap-datepicker.js"></script>
-
+    <script src="Scripts/angular-xeditable.js"></script>
+    
     <!-- App -->
     <script src="app/app.js"></script>
     <script src="app/controllers/controllers.js"></script>
