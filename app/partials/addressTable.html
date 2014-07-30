@@ -4,7 +4,7 @@
             <th data-ng-click="setOrder('name')">Name</th>
             <th data-ng-click="setOrder('address')">Address</th>
             <th data-ng-click="setOrder('phone')">Phone</th>
-            <th data-ng-click="setOrder('date')">Date/Notes</th>
+            <th data-ng-click="setOrder('date')">Notes</th>
             <th></th>
         </tr>
     </thead>
@@ -25,18 +25,22 @@
             <td>
                 <a href="#" editable-text="address.phone" onbeforesave="updateAddress(address.id,'phone', $data)">{{ address.phone || "none" }}</a>
             </td>
-            <td>
+            <td class="white-background">
 				<table class="datesTable">
+                    <tr data-ng-show="address.dates && address.dates.length > 0">
+                        <th>Notes</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
 					<tr data-ng-repeat="date in address.dates track by date.id | orderBy:orderby:reverse">
-               			<td>{{ date.date }}</td>
 						<td>{{ date.notes?date.notes:'' }}</td>
+               			<td>{{ date.date }}</td>
                         <td><button id="DeleteDate" class="delete-button" type="button" data-ng-click="deleteDate(date.id, address.id)" title="Delete this Note">Delete</button></td>
 					</tr>
 				</table>
-                <br /> 
-                <button id="AddDate" class="btn btn-success" type="button" data-ng-click="addDate(address)">Add Note</button>
+                <button id="AddDate" class="btn add-button" type="button" data-ng-click="addDate(address)">Add Note</button>
             </td>
-            <td class="middle"><button id="DeleteAddress" class="delete-button-big" type="button" data-ng-click="deleteAddress(address.id)" title="Delete this Address">Delete</button></td>
+            <td class="middle white-background"><button id="DeleteAddress" class="delete-button-big" type="button" data-ng-click="deleteAddress(address.id)" title="Delete this Address">Delete</button></td>
              
         </tr>
         <tr class="info">

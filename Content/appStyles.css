@@ -115,9 +115,24 @@ footer {
 
 .modal { display:none; }
 
-.datesTable { width: 100% }
+.datesTable { 
+    width: 100%; 
+    margin-bottom: 5px;
+}
+.datesTable tr td, .datesTable tr th {
+	background-color: #fff !important;
+    padding: 5px;
+    line-height: 1.5;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+    border-left: 0 none;
+}
 .datesTable tr th {
-	background-color: #006dcc !important;
+    color: #333 !important;
+    border-bottom: 1px solid #bbb;
+}    
+.ordersTable tr td.white-background, .ordersTable tr td.white-background:hover {
+	background-color: #fff !important;
 }
 .ordersTable .middle {
     vertical-align: middle;
@@ -147,3 +162,18 @@ button.delete-button-big {
     height: 30px;
 }
 button.delete-button:hover, button.delete-button-big:hover { opacity: 1;}
+button.add-button {
+    background-color: transparent;
+    background-image: url("images/add.png");
+    background-position: 3px center !important;
+    background-repeat: no-repeat;
+    color: #387038;
+    padding-left: 28px;
+    border: 0 none;
+    box-shadow: 0;
+    text-shadow: 0;
+}
+button.add-button:hover {
+    background-color: #51a351;
+    color: #fff;
+}
