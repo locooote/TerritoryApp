@@ -134,19 +134,16 @@ button.btn.sp-bot-left {
     background: url("images/edit.png") no-repeat scroll right top;
 }
 
-button.delete-button {
+button.delete-button, button.delete-button-big {
     background: url(images/delete.png) no-repeat;
     border: medium none;
     text-indent: -9999em;
     width: 20px;
-    opacity: .75;
+    opacity: .55;
 }
 button.delete-button-big {
     background: url(images/delete-big.png) no-repeat; 
-    border: medium none;
-    text-indent: -9999em;
     width: 30px;
     height: 30px;
-    opacity: .75;
 }
 button.delete-button:hover, button.delete-button-big:hover { opacity: 1;}

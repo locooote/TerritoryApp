@@ -11,7 +11,13 @@ app.service('territoriesService', function () {
 		type: "POST"
 	});
     
-    this.territoriesService = { "errors":""};
+    this.insertedAddress = function() {
+        return window.insertedAddress ? window.insertedAddress : {};
+    }  
+    
+    this.insertedDate = function() {
+        return window.insertedDate ? window.insertedDate : {};
+    }  
 
 	this.retrieveTerritories = function() {
 
@@ -99,7 +105,18 @@ app.service('territoriesService', function () {
             date: date,
             notes: notes
         };
-        jQuery.ajax({ data: data });
+        jQuery.ajax({
+			data: data,
+			success: function(json) {
+				if( json ) {
+					// console.log(json);
+	 				window.insertedAddress = json;
+				} else {
+					console.log('No Success');
+				}
+			}
+
+		});
     };
     
     this.updateAddress = function (addressId,name,value) {
@@ -132,7 +149,18 @@ app.service('territoriesService', function () {
             date: date, 
             notes: notes
         };
-        jQuery.ajax({ data: data });
+        jQuery.ajax({
+			data: data,
+			success: function(json) {
+				if( json ) {
+					// console.log(json);
+	 				window.insertedDate = json;
+				} else {
+					console.log('No Success');
+				}
+			}
+
+		});
     };
     
     this.deleteDateEntry = function(selectedDateId) {

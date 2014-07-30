@@ -38,8 +38,38 @@ class Api extends CI_Controller {
                         );
                         if($this->input->post('notes')) 
                             $date['notes'] = $this->input->post('notes');				                // insert publisher data
-					    $this->db->insert('dates', $date);          
+					    $this->db->insert('dates', $date); 
+                        // get inserted data
+                        $address_inserted = $this->mysqlite->db_read("SELECT * FROM addresses WHERE id = '".$address_id."'");
+                        foreach ($address_inserted as $address)
+                        {									
+                            // dates
+                            $dates = array();
+                            $dates_fetch = $this->mysqlite->db_read("SELECT * FROM dates WHERE address_id = '".$address['id']."'");
+                            foreach ($dates_fetch as $date)
+                            {	
+                                $dates[] = $date;
+                            }
+                            $address['dates'] = $dates;
+                             
+                        }
+                        header('Content-Type: application/json');
+					    echo json_encode( $address );
                     }
+                    
+                    // dates
+				    if($table=='dates') {
+                        $dates = array();
+                        $date_id = $this->db->insert_id();
+                        $dates_fetch = $this->mysqlite->db_read("SELECT * FROM dates WHERE id = '".$date_id."'");
+                        foreach ($dates_fetch as $date)
+                        {	
+                            $dates = $date;
+                        }
+                        header('Content-Type: application/json');
+					    echo json_encode( $dates );
+                    }   
+                        
                     /*
 					// the publisher
                     if($table=='publishers') {

@@ -126,24 +126,9 @@ app.controller('TerritoriesController', function ($scope, $sce,  $location, $rou
     init();
 
     function init() {
-		// first, get latest from db
 		territoriesService.retrieveTerritories();
-
 		$scope.territories = territoriesService.getTerritories();
 		$scope.site_url = site_url;
-        if(territoriesService.errors) {
-            // DismissModal
-            $('#ErrorMessage #DismissModal').on('click', function(e) {
-                e.preventDefault;
-                $('#ErrorMessage').modal('hide');
-                console.log($(this).attr('data-url'));
-                //  $location,
-                return false;
-            });
-            $scope.errorMessage = $sce.trustAsHtml(territoriesService.errors);
-            $('#ErrorMessage').modal('show');
-            $('#ErrorMessage').css('left',window.innerWidth/2); // fix modal
-        }    
     }
     
     $scope.insertTerritory = function () {
@@ -192,29 +177,24 @@ app.controller('TerritoryController', function ($scope, $location, $route, $rout
     $scope.addAddress = function () {
         territoriesService.addAddress($scope.territory.id, $scope.newAddress.name, $scope.newAddress.address, $scope.newAddress.phone, $scope.newAddress.date, $scope.newAddress.notes);
         
-        var newCount = +Math.floor((Math.random() * 1000) + 1); // temp
-        var newAddress = {
-            "name": $scope.newAddress.name,
-            "phone": $scope.newAddress.phone,
-            "address": $scope.newAddress.address,
-            "dates": [{
-                "id": 'new-'+newCount, 
-                "address_id": 'new-address-'+newCount, 
-                "date": $scope.newAddress.date, 
-                "notes": $scope.newAddress.notes
-            }],
-            "territory_id": $scope.territory.id,
-            "id": 'new-address-'+newCount
-        };
-        console.log(newAddress);
-        $scope.territory.addresses.push(newAddress);
-		$route.reload();
+        var findInsertedAddress = setInterval( function() {
+            insertedAddress = territoriesService.insertedAddress();
+            console.log(insertedAddress); 
+            if(!insertedAddress.id) // loop
+                loopAgain = 1;
+            else {
+                clearInterval(findInsertedAddress);
+                console.log(insertedAddress);
+                $scope.territory.addresses.push(insertedAddress);
+		        $route.reload();
+            }
+        }, 100);
+        
     };
     
     $scope.updateAddress = function (addressId,name,data) {
         console.log(addressId + ' name: ' + name + ' data: ' + data); 
         territoriesService.updateAddress(addressId,name,data);
-        // $route.reload();
     };
     
     $scope.deleteAddress = function (selectedAddressId) {
@@ -252,24 +232,27 @@ app.controller('TerritoryController', function ($scope, $location, $route, $rout
 
 	$scope.addDateEntry = function(addressSelectedID) {
 		territoriesService.addDateEntry(addressSelectedID, $scope.newDate.date, $scope.newDate.notes);
-        $scope.newDate['id'] = 'new-'+Math.floor((Math.random() * 1000) + 1);
-        $scope.newDate['address_id'] = 'new-address-'+Math.floor((Math.random() * 1000) + 1);
-        for(key in $scope.territory.addresses) {
-            if($scope.territory.addresses[key].id == addressSelectedID)
-                $scope.territory.addresses[key].dates.push($scope.newDate);
-        }
-		$('#AddDateModal').modal('hide');
-		$route.reload();
+        
+        var findInsertedDate = setInterval( function() {
+            insertedDate = territoriesService.insertedDate();
+            console.log(insertedDate); 
+            if(!insertedDate.id) // loop
+                loopAgain = 1;
+            else {
+                clearInterval(findInsertedDate);
+                console.log('insertedDate: ' +insertedDate);
+                for(key in $scope.territory.addresses) {
+                    if($scope.territory.addresses[key].id == insertedDate.address_id)
+                        $scope.territory.addresses[key].dates.push(insertedDate);
+                }
+                $('#AddDateModal').modal('hide');
+		        $route.reload();
+            }
+        }, 1000);
 	};
     
     $scope.deleteDate = function (selectedDateId,selectedAddressId) {
-        // is this a temp id?
-        //if(selectedDateId.match(/new/i) || selectedDateId.match(/new/i)) {
-            territoriesService.errors = "There was an error processing operation. Please try again. <br /><a href='' data-url='"+ site_url +"#/territory/"+ $scope.territory.id +"' id='DismissModal'>Return to Teritory Page</a>.";
-            $location.url("/territories");
-            return;
-        //}
-		$scope.selectedDateId = selectedDateId;
+ 		$scope.selectedDateId = selectedDateId;
         $scope.selectedAddressId = selectedAddressId;
 		$('#DeleteDateModal').modal('show');
     };
