@@ -16,27 +16,27 @@
         </tr>
         <tr data-ng-repeat="address in territory.addresses track by address.id | orderBy:orderby:reverse">
             <td>
-                <a href="#" editable-text="address.name" onbeforesave="updateAddress(address.id,'name', $data)">{{ address.name || "empty" }}</a>
+                <a href="#" editable-text="address.name" onbeforesave="updateAddress(address.id,'name', $data)">{{ address.name || "none" }}</a>
                  
             </td>
             <td>
-                <a href="#" editable-text="address.address" onbeforesave="updateAddress(address.id,'address', $data)">{{ address.address || "empty" }}</a>
+                <a href="#" editable-text="address.address" onbeforesave="updateAddress(address.id,'address', $data)">{{ address.address || "none" }}</a>
             </td>
             <td>
-                <a href="#" editable-text="address.phone" onbeforesave="updateAddress(address.id,'phone', $data)">{{ address.phone || "empty" }}</a>
+                <a href="#" editable-text="address.phone" onbeforesave="updateAddress(address.id,'phone', $data)">{{ address.phone || "none" }}</a>
             </td>
             <td>
 				<table class="datesTable">
 					<tr data-ng-repeat="date in address.dates track by date.id | orderBy:orderby:reverse">
                			<td>{{ date.date }}</td>
 						<td>{{ date.notes?date.notes:'' }}</td>
-                        <td><button id="DeleteDate" class="delete-button" type="button" data-ng-click="deleteDate(date.id)" title="Delete this Note">Delete</button></td>
+                        <td><button id="DeleteDate" class="delete-button" type="button" data-ng-click="deleteDate(date.id, address.id)" title="Delete this Note">Delete</button></td>
 					</tr>
 				</table>
                 <br /> 
-                <button id="AddDate" class="btn btn-success" type="button" data-ng-click="addDate(address.id)">Add Note</button>
+                <button id="AddDate" class="btn btn-success" type="button" data-ng-click="addDate(address)">Add Note</button>
             </td>
-            <td class="middle"><button id="DeleteAddress" class="delete-button" type="button" data-ng-click="deleteAddress(address.id)" title="Delete this Address">Delete</button></td>
+            <td class="middle"><button id="DeleteAddress" class="delete-button-big" type="button" data-ng-click="deleteAddress(address.id)" title="Delete this Address">Delete</button></td>
              
         </tr>
         <tr class="info">
@@ -58,11 +58,20 @@
             <h4 class="modal-title">Enter a New Note</h4>
           </div>
           <div class="modal-body">
-              inputs
+            <p>Name: <strong>{{addressSelected.name}}</strong>, Address:  <strong>{{addressSelected.address}}</strong></p>
+              <div class="span3">
+                <label>Notes:</label> 
+ 			    <input data-ng-model="newDate.notes" type="text" placeholder="Notes">	 
+              </div>
+              <div class="span3">
+                <label class="">Date:</label>  
+                <input data-ng-model="newDate.date" type="text" class="date" placeholder="mm-dd-yyyy" required />
+              </div>
+              
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-            <button type="button" class="btn btn-primary btn-success" data-ng-click="addDateEntry()">Submit Note</button>
+            <button type="button" class="btn btn-primary btn-success"  data-ng-disabled="!newDate.date || !newDate.notes" data-ng-click="addDateEntry(addressSelected.id)">Submit Note</button>
           </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -77,11 +86,13 @@
           </div>
           <div class="modal-body">
             <p>Are you sure you want to delete this note?</p>
+            <p>This operation cannot be reversed.</p>  
+            <p>{{selectedDateId}} - {{selectedAddressId}}</p>  
             <div id="date-id"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-            <button type="button" class="btn btn-primary btn-danger" data-ng-click="deleteDate(selectedDateId)">Yes, proceed</button>
+            <button type="button" class="btn btn-primary btn-danger" data-ng-click="deleteDateEntry(selectedDateId,selectedAddressId)">Yes, proceed</button>
           </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -96,11 +107,13 @@
           </div>
           <div class="modal-body">
             <p>Are you sure you want to delete this address?</p>
+            <p>This operation will remove this address and all notes associated with it.</p>
+            <p>This cannot be reversed.</p>  
             <div id="date-id"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-            <button type="button" class="btn btn-primary btn-danger" data-ng-click="deleteAddress(selectedAddressId)">Yes, proceed</button>
+            <button type="button" class="btn btn-primary btn-danger" data-ng-click="deleteAddressEntry(selectedAddressId)">Yes, proceed</button>
           </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

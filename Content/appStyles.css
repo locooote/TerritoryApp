@@ -113,6 +113,8 @@ footer {
     opacity: 1.0;
 }
 
+.modal { display:none; }
+
 .datesTable { width: 100% }
 .datesTable tr th {
 	background-color: #006dcc !important;
@@ -139,4 +141,12 @@ button.delete-button {
     width: 20px;
     opacity: .75;
 }
-button.delete-button:hover { opacity: 1;}
+button.delete-button-big {
+    background: url(images/delete-big.png) no-repeat; 
+    border: medium none;
+    text-indent: -9999em;
+    width: 30px;
+    height: 30px;
+    opacity: .75;
+}
+button.delete-button:hover, button.delete-button-big:hover { opacity: 1;}

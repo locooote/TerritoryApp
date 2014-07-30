@@ -95,14 +95,20 @@ class Api extends CI_Controller {
 					$set = '';
 					$columns = explode(',',$column);
 					if($columns) foreach($columns as $field) 
-						if( $this->input->post(trim($field)) ) $set .= ($set?',':''). " $field = '".$this->input->post(trim($field))."'";
+						// if( $this->input->post(trim($field)) ) 
+                        $set .= ($set?',':''). " $field = '".$this->input->post(trim($field))."'";
 					$result = $this->mysqlite->db_query("UPDATE $table SET $set WHERE id = ".$id);
 					var_dump( $result );
 				}
-				// DELETE (Or hide for now)
-				else if($this->input->post('delete')) {
-					$query =  "UPDATE publishers";
-					// $result = $this->mysqlite->db_query($query);
+				// DELETE 
+				else if($this->input->post('delete') && $id) {
+					$result = $this->mysqlite->db_query("DELETE FROM $table  WHERE id = ".$id);
+					var_dump( $result );
+                    // addresses
+				    if($table=='addresses') {
+                        $result = $this->mysqlite->db_query("DELETE FROM dates WHERE address_id = ".$id);
+					   var_dump( $result );          
+                    }
 				}
 				break;
 			case 'GET':

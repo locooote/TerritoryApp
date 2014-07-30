@@ -39,8 +39,13 @@
 		    </label>
 		</div>
 
-        <div class="row" ng-show="addChecked">
-            <h4>Add a New Address</h4>
+        <div ng-show="addChecked">
+           <div class="row">
+            <div class="span3">
+               <h4>Add a New Address</h4>
+            </div>
+           </div> 
+           <div class="row">    
             <div class="span3">
                 Name:
                 <br />
@@ -56,6 +61,8 @@
                 <br />
  			    <input data-ng-model="newAddress.phone" type="text" placeholder="Phone">	 
             </div>
+          </div>
+          <div class="row">  
             <div class="span3">
                 Date:
                 <br />
@@ -72,6 +79,7 @@
                     data-ng-disabled="!newAddress.name || !newAddress.address"
                     data-ng-click="addAddress()">Add Address</button>
             </div>
+          </div>  
         </div>
         <br /><hr />
         
@@ -88,3 +96,5 @@
         </div>
     </div>
 </div>
+
+

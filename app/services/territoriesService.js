@@ -10,6 +10,8 @@ app.service('territoriesService', function () {
 		dataType: "json",
 		type: "POST"
 	});
+    
+    this.territoriesService = { "errors":""};
 
 	this.retrieveTerritories = function() {
 
@@ -75,6 +77,15 @@ app.service('territoriesService', function () {
         };
 		jQuery.ajax({ data: data });
 	}
+        
+    this.deleteTerritory = function (id) {
+        for (var i = territories.length - 1; i >= 0; i--) {
+            if (territories[i].id === id) {
+                territories.splice(i, 1);
+                break;
+            }
+        }
+    };
     
     this.addAddress = function (TerritoryId, name, address, phone, date, notes) {
         var data = {
@@ -102,13 +113,36 @@ app.service('territoriesService', function () {
         jQuery.ajax({ data: data });
     }
 
-    this.deleteTerritory = function (id) {
-        for (var i = territories.length - 1; i >= 0; i--) {
-            if (territories[i].id === id) {
-                territories.splice(i, 1);
-                break;
-            }
-        }
+    this.deleteAddressEntry = function(selectedAddressIdId) {
+        var data = {
+            module: 'addresses',
+			delete: 1,
+            id: selectedAddressIdId
+        };
+        jQuery.ajax({ data: data });
     };
+    
+    this.addDateEntry = function( addressSelectedID, date, notes) {
+        console.log('addressSelectedID: '+addressSelectedID+', date: '+date+', notes: '+notes); 
+        var data = {
+            module: 'dates',
+			column: 'date, notes, address_id',
+			add: 1,
+            address_id: addressSelectedID,
+            date: date, 
+            notes: notes
+        };
+        jQuery.ajax({ data: data });
+    };
+    
+    this.deleteDateEntry = function(selectedDateId) {
+        var data = {
+            module: 'dates',
+			delete: 1,
+            id: selectedDateId
+        };
+        jQuery.ajax({ data: data });
+    };
+
 
 });
