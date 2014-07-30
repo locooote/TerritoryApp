@@ -65,6 +65,9 @@
     <script src="Scripts/angular-xeditable.js"></script>
     
     <!-- App -->
+    <script>
+        var site_url = "<?php echo $_SERVER['REQUEST_URI'] ?>";
+    </script>
     <script src="app/app.js"></script>
     <script src="app/controllers/controllers.js"></script>
     <script src="app/services/territoriesService.js"></script>
