@@ -28,6 +28,8 @@ A web client for Territory Services API is a RESTful api developed to provide ea
 
 ## Installation
 
+Run `npm install` then, `grunt`
+
 
 ## Official Documentation
 
