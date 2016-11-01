@@ -50,7 +50,11 @@
 	                console.log('$scope.token', $scope.token);
 	 				window.location = "/" + settings.site + "#/dashboard";
 	                window.location.reload();
- 				}   
+ 				}
+ 				
+ 				if (!$scope.token && $location.$$path == '/lost-password') {
+					$scope.src = 'http://territory-api.webdevstudio.net/password-reset/' + Language.lang;	 				 
+ 				}    
  				               
             }])
 
@@ -562,22 +566,17 @@
 									
 									// Google Maps Api App
 									$scope.initializeMap = function () {
-										$('#territory-map-display').css('height', ($(window).height() - 140))
-										
+										$('#territory-map-display').css('height', ($(window).height() - 140)) 
+									  	
 									    // isMapInitialized=true; 
-									    
-									    
-									    //******* Now draw boudaries **********
-											
-										map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);	
+										map = new google.maps.Map(document.getElementById("territory-map-display"), mapOptions);
 										
-									    var boundary = [];
+
+									    // Add boundaries 	
+										
+									    boundary = [];
 									    var bounds = new google.maps.LatLngBounds();
 								  	
-									  	var colors = {
-										  	orange: '#fb8c00',
-										  	orangeLite: '#FFE8CE'
-									  	}
 									  	
 									  	// Load the saved boundaries data
 									  	var savedPoly = res.data.territory.boundaries; 
@@ -586,7 +585,7 @@
 									  	// console.log('savedPoly', savedPoly);
 									  	
 									  	// Construct the polygon.
-										var terrCoordinates = new google.maps.Polygon({
+										terrCoordinates = new google.maps.Polygon({
 										    // paths: JSON.parse(savedPoly),
 										    strokeColor: colors.orange,
 										    strokeWeight: 5,
@@ -609,11 +608,11 @@
 										}	
 										
 										terrCoordinates.setMap(map);
-										
-									    /***** Add Markers ********/
+										  
+									    // Add Markers 
 									
 									    if(window.mapdata && window.mapdata[0]) {
-											
+										    
 											var centerLatlng = new google.maps.LatLng(window.mapdata[0].lat, window.mapdata[0].long),
 												bounds = new google.maps.LatLngBounds();
 											
@@ -621,12 +620,12 @@
 										        zoom: 18,
 										        center: centerLatlng
 										    }
-									
+											
 										    var markers = window.mapdata;
 										    
 										    var m = 0;
 										    
-										    for(m in markers) {
+										    for(m=0; m<markers.length; m++) {
 										        markers[m].myLatlng = new google.maps.LatLng(window.mapdata[m].lat, window.mapdata[m].long);
 										        var markerColor = google.maps.geometry.poly.containsLocation(markers[m].myLatlng, terrCoordinates) ? 'blue' : 'red';
 										        markers[m].marker = $scope.createMarker(map, markers[m], markerColor);
@@ -645,6 +644,78 @@
 										    
 									    }
 									     
+									}
+									
+									$scope.activateDrawing = function() {
+										// Activate Drawing
+									    
+									    var drawingManager = new google.maps.drawing.DrawingManager({
+										    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+										    drawingControl: true,
+										    drawingControlOptions: {
+										      position: google.maps.ControlPosition.TOP_CENTER,
+										      drawingModes: [
+										        google.maps.drawing.OverlayType.POLYGON
+										      ]
+										    },
+											polygonOptions: {
+												fillColor: colors.orangeLite,
+												fillOpacity: .5,
+												strokeWeight: 5,
+												strokeColor: colors.orange,
+												editable: true,
+												zIndex: 1
+											}
+										});
+										
+										drawingManager.setMap(map);
+										 
+										var saveBoundary = function(event, terrCoordinates) {
+										  	boundary = [];
+										  	terrCoordinates.getPath().forEach(function(Latlng, number) {
+											  	boundary.push({'lat': Latlng.lat(), 'lng': Latlng.lng()});
+										  	});
+										  	// console.log('boundary', boundary);
+										  	infowindow = new google.maps.InfoWindow;
+										  	infowindow.setContent('<button class="btn btn-success save-boundary">Save boundary</button>');
+										  	infowindow.setPosition(event.latLng);
+											infowindow.open(map);
+										}
+									    
+									    var updateBoundary = function(boundaryString) {
+										    if(window.confirm("Update boundary for this territory?"))
+										    // do ajax
+										    $.ajax({
+											    type: 'POST',
+											    url: '',
+											    data: {
+												    boundaries: boundaryString,
+												    'action': 'update-boundary'
+											    },
+											    dataType: 'json',
+											    error: function(jQxhr, status, error) {
+												    console.log(status, error);
+											    },
+											    success: function(data, status, jQxhr) {
+												    console.log(status, data);
+											    }
+										    });
+										    
+										}
+										
+										google.maps.event.addListener(terrCoordinates, 'click', function(e) {
+										  	saveBoundary(e, terrCoordinates);
+									  	}); 
+									  	
+									  	$(document).off('click');
+										$(document).on('click', '.save-boundary', function(e) {
+										  	e.stopPropagation();
+										  	e.preventDefault();
+										  	var boundaryString = JSON.stringify(boundary);
+										  	// console.log('boundary', boundaryString);
+										  	updateBoundary(boundaryString);
+									  	});
+										
 									}
 									
 									$scope.createMarker = function(map, data, markerColor) {
@@ -711,10 +782,15 @@
 									$scope.logError = function(error){
 										console.log('error', error)
 									}
- 									 
-								    var map, geocoder, infowindow, tracking, positionTimer, geoLoc, userLocation;
 								    
+								    
+									var map, geocoder, infowindow, tracking, positionTimer, geoLoc, userLocation, terrCoordinates, boundary, colors = {
+									  	orange: '#fb8c00',
+									  	orangeLite: '#FFE8CE'
+								  	}
+								  	
 								    $scope.initializeMap();
+								    // $scope.activateDrawing();
 								     
 								    // Add user marker
 								    $('#track-user').on('click', function(e) {
@@ -1132,145 +1208,155 @@
 		            // ALL ACTIVITIES
 		            if ( $location.$$path == '/activities') {
 					
-						if (!window.chartDone) {
+						// if (!window.chartDone) {
 							
 							window.chartDone = true;
 							
-							API.getAllActivities(function(res) {
+							API.getAllNotesActivities(function(res) {
 								if(res && res.error) {
 									Notify.error(res.error);
 									return;
 								}
+								
 								if(res.data) {
-/*
-									 
-							        var timeline;
+									var t;
+									for(t=0; t<res.data.length; t++) {
+										if(res.data[t].records && res.data[t].records.length) {
+											console.log('territory '+ res.data[t].number +' records', res.data[t].records.length);
+										}
+									}
+									
+									var ctx = $("#activities-chart");
+									
+									var dataModel = {
+							            label: "Territory",
+							            fill: false,
+							            lineTension: 0.1,
+							            backgroundColor: "rgba(75,192,192,0.4)",
+							            borderColor: "rgba(75,192,192,1)",
+							            borderCapStyle: 'butt',
+							            borderDash: [],
+							            borderDashOffset: 0.0,
+							            borderJoinStyle: 'miter',
+							            pointBorderColor: "rgba(75,192,192,1)",
+							            pointBackgroundColor: "#fff",
+							            pointBorderWidth: 1,
+							            pointHoverRadius: 5,
+							            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+							            pointHoverBorderColor: "rgba(220,220,220,1)",
+							            pointHoverBorderWidth: 2,
+							            pointRadius: 1,
+							            pointHitRadius: 10,
+							            data: [65, 59, 80, 81, 56, 55, 40],
+							            spanGaps: false,
+							        };
 							        
-							        // Build Chart data
-							        var total = res.data.length, i = 0, r = 0, group = {}, groups = new vis.DataSet(), items = new vis.DataSet();
-   
-							        for(i=0; i < total; i++) {
-								        // console.log('terr', res.data[i].number);
+							        var createDataSet = function(data) {
+								        if(!data) return dataModel;
 								        
-								        group = {id: i, content: '<div class="territory-num">'+ res.data[i].number +'</div>' };
-								        groups.add(group);
+								        var newDataSet = cloneObj(dataModel);
 								        
-								        if(res.data[i].records.length) {
-											 
-									        // activityType
-									        var checkin = null, checkout = null, endDate = null;
-									        for(r in res.data[i].records) {
-										        // console.log('res.data[i].records', r);
-										        
-										        if(res.data[i].records[r].activityType == "checkout") {
-											        
-											        endDate = ( (res.data[i].records[parseInt(r + 1)] &&  res.data[i].records[parseInt(r + 1)].activityType == "checkin" && res.data[i].records[r].publisherId == res.data[i].records[parseInt(r + 1)].publisherId) ? API.formatDateStrToObj(res.data[i].records[parseInt(r + 1)].date) : null);
-											        
-											        items.add({
-												      id: i + r,
-												      group: i,
-												      content: '<div class="publisher"> <span class="territory-num">'+ res.data[i].number +'</span> <span class="name">'+ res.data[i].records[r].publisher.firstName +' '+ res.data[i].records[r].publisher.lastName + '</span> <span class="territory-date checkout">'+ res.data[i].records[r].date +'</span> ' + (endDate ? ' <span class="territory-span"></span><span class="territory-date checkin">'+ res.data[i].records[parseInt(r + 1)].date +'</span> ' : '') + '</div>',
-												      start: API.formatDateStrToObj(res.data[i].records[r].date),
-												      end: endDate,
-												      type: (endDate ? 'range' : 'box')
-												    });
-										        
-											        // console.log(res.data[i].records[r].activityType, res.data[i].records[r].date);
-											    
-											        // if(res.data[i].records[parseInt(r + 1)]) 
-											        	// console.log(res.data[i].records[parseInt(r + 1)].activityType, res.data[i].records[parseInt(r + 1)].date);
-										        }
-										        
-									        }
-								        }  
+								        for(var d in data) {
+									        newDataSet[d] = data[d];
+								        }
 								        
+								        return newDataSet;
 							        }
 							        
-							        // create visualization
-									var container = document.getElementById('territory-activities'), options = {
-									    groupOrder: 'id'  // groupOrder can be a property name or a sorting function
-									};
+									var cloneObj = function(obj) {
+									    if (null == obj || "object" != typeof obj) return obj;
+									    
+									    var copy = obj.constructor();
+									    for (var attr in obj) {
+									        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+									    }
+									    
+									    return copy;
+									}
 									
-									// console.log('groups', groups);
-									// console.log('items', items); 
+									var getMonthByIndex = function(index) {
+										var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+										var today = new Date();
+										var newDate = new Date(today.setMonth(today.getMonth() + (index)));
+										return monthNames[newDate.getMonth()];
+									}
 									
-									timeline = new vis.Timeline(container);
-									timeline.setOptions(options);
-									timeline.setGroups(groups);
-									timeline.setItems(items);
-*/
+									var getRandomInt = function(min, max) {
+										return Math.floor(Math.random() * (max - min + 1) + min);
+									}
+									
+									var getTerritoryNotesForIndex = function(noteIndex, index) {
+										return (res.data[noteIndex].territoryNotes[index] && res.data[noteIndex].territoryNotes[index].notesCount) ? res.data[noteIndex].territoryNotes[index].notesCount : '';
+									}
+									
+									var getBoderColorWithAlpha = function(colorStr, alpha) {
+										var newColor = colorStr.replace('rgba(', '').replace(')', '').split(',')
+										return "rgba("+ newColor[0] + "," + newColor[1] + "," + newColor[2] + "," + alpha + ")";
+									}
 
-									// D3 Timeline
+									var months = [];
+									var count = 7;
+									for(var i=0; i<count; i++) {
+										months.push(getMonthByIndex(-i));
+									}
 									
-									var labelTestData1 = [
-								        {label: "person a", times: [
-									        {"starting_time": 1355752800000, "ending_time": 1355759900000}, 
-									        {"starting_time": 1355767900000, "ending_time": 1355774400000}
-									    ]},
-								        {label: "person b", times: [{"starting_time": 1355759910000, "ending_time": 1355761900000}, {"starting_time": 1355771900000, "ending_time": 1355781900000}]},
-								        {label: "person c", times: [{"starting_time": 1355761910000, "ending_time": 1355763910000}]},
-								    ];
-								 
-								 
-									var labelTestData2 = [
-								        {label: "person a", times: [
-									        {"starting_time": API.formatDateStrToObj('2016-1-12'), "ending_time": API.formatDateStrToObj('2016-1-15')}, 
-									        {"starting_time": API.formatDateStrToObj('2016-1-11'), "ending_time": API.formatDateStrToObj('2016-1-22')}
-									    ]},
-								        {label: "person b", times: [{"starting_time": API.formatDateStrToObj('2016-1-02'), "ending_time": API.formatDateStrToObj('2016-1-12')}, {"starting_time": API.formatDateStrToObj('2016-1-15'), "ending_time": API.formatDateStrToObj('2016-1-22')}]},
-								        {label: "person d", times: [{"starting_time": API.formatDateStrToObj('2015-02-02'), "ending_time": API.formatDateStrToObj('2015-11-02')}]},
-								        {label: "person e", times: [{"starting_time": API.formatDateStrToObj('2015-09-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								        {label: "person f", times: [{"starting_time": API.formatDateStrToObj('2015-11-02'), "ending_time": API.formatDateStrToObj('2016-2-02')}]},
-								        {label: "person g", times: [{"starting_time": API.formatDateStrToObj('2015-10-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								        {label: "person h", times: [{"starting_time": API.formatDateStrToObj('2015-11-02'), "ending_time": API.formatDateStrToObj('2016-1-02')}]},
-								    ];
-								 
-								 
-								
-								    var width = 3200;
-								       
-								    var timelineHover = function() {
-								        var chart = d3.timeline()
-								          .width(width)
-								          .stack()
-								          .margin({left:70, right:30, top:0, bottom:0})
-								          .hover(function (d, i, datum) {
-								          // d is the current rendering object
-								          // i is the index during d3 rendering
-								          // datum is the id object
-								            var div = $('#hoverRes');
-								            var colors = chart.colors();
-								            div.find('.coloredDiv').css('background-color', colors(i))
-								            div.find('#name').text(datum.label);
-								          })
-								          .click(function (d, i, datum) {
-								            console.log(datum.label);
-								          })
-								          
-								          // .navigate(navigateBackwards, navigateForwards)
-								          // navigateBackwards(beginning, chartData)
-								          
-								          .scroll(function (x, scale) {
-								            $("#scrolled_date").text(scale.invert(x) + " to " + scale.invert(x+width));
-								          });
-								
-								        var svg = d3.select("#timeline3")
-								        			.append("svg").attr("width", width)
-								          				.datum(labelTestData2).call(chart);
-								    }
-								 
-								 
-								    timelineHover(); 
+									var datasets = [];
+									var dataCount = res.data.length;
+									for(var i=1; i<dataCount; i++) {
+										datasets.push(createDataSet({
+								            label: res.data[i].territoryNumber,
+								            data: [getTerritoryNotesForIndex(i, 0), getTerritoryNotesForIndex(i, 1), getTerritoryNotesForIndex(i, 2), getTerritoryNotesForIndex(i, 3), getTerritoryNotesForIndex(i, 4), getTerritoryNotesForIndex(i, 5), getTerritoryNotesForIndex(i, 6)],
+								            borderColor: "rgba("+getRandomInt(0,255)+","+getRandomInt(0,255)+","+getRandomInt(0,255)+",0.45)"
+								        }));
+									}
+
+									var myChart = new Chart(ctx, {
+									    type: 'line',
+									    animation:{
+									        animateScale: true
+									    },
+									    data: {
+										    labels: months.reverse(), 
+										    datasets: datasets
+										},
+									    options: {
+										    // animationEasing: 'linear',
+										    title: {
+									            display: true,
+									            // text: 'Custom Chart Title'
+									        },
+									        legend: {
+										      	labels: {
+											      	// boxWidth: 10 
+											   	},
+											   	onClick: function(event, legendItem) {
+												   	// console.log('legendItem', legendItem)
+												   	var meta = myChart.getDatasetMeta(legendItem.datasetIndex);
+												   	meta.dataset._view.borderWidth = 20
+												   	meta.dataset._view.borderColor = getBoderColorWithAlpha(meta.dataset._view.borderColor, 1);
+												   	 
+											        myChart.update();
+											   	}
+									        },
+									        scales: {
+									            yAxes: [{
+									                ticks: {
+									                    beginAtZero:true
+									                }
+									            }]
+									        }
+									    }
+									});
+									
+									// console.log('myChart', myChart)
 
 								}
 								
 							});
 							
-						}
+						// }
 							
-			            
-			        }    
-		            
+			        }    		            
 	
 				});
 				
